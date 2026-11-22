@@ -76,7 +76,7 @@ export const Navbar = () => {
             </Link>
 
             {/* 2. Десктоп-навигация (строго в 1 строку, whitespace-nowrap, одинаковая высота) */}
-            <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
+            <nav className="hidden xl:flex items-center gap-1 xl:gap-2">
               {navLinks.map((item) => {
                 const Icon = item.icon;
                 const isActive = pathname.startsWith(item.href);
@@ -98,7 +98,7 @@ export const Navbar = () => {
             </nav>
 
             {/* 3. Десктоп-кнопки справа (строго whitespace-nowrap) */}
-            <div className="hidden lg:flex items-center gap-2.5 shrink-0">
+            <div className="hidden xl:flex items-center gap-2.5 shrink-0">
               <a
                 href="https://vk.ru/club201599659"
                 target="_blank"
@@ -118,7 +118,7 @@ export const Navbar = () => {
             </div>
 
             {/* Мобильная кнопка бургера */}
-            <div className="flex items-center lg:hidden shrink-0">
+            <div className="flex items-center xl:hidden shrink-0">
               <button
                 type="button"
                 aria-label={mobileMenuOpen ? "Закрыть меню" : "Открыть меню"}
@@ -135,7 +135,7 @@ export const Navbar = () => {
 
       {/* Выдвижное мобильное меню (Drawer) */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 top-16 z-50 bg-white flex flex-col justify-between p-6 overflow-y-auto lg:hidden animate-in fade-in slide-in-from-top-4 duration-200">
+        <div className="fixed inset-0 top-16 sm:top-20 z-50 bg-white flex flex-col justify-between p-6 overflow-y-auto xl:hidden animate-in fade-in slide-in-from-top-4 duration-200">
           <div className="space-y-3">
             <div className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
               Навигация
@@ -170,7 +170,7 @@ export const Navbar = () => {
               href="https://vk.ru/club201599659"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 min-h-[48px] w-full text-sm font-bold text-slate-700 bg-slate-100 rounded-2xl whitespace-nowrap"
+              className="flex items-center justify-center gap-2 min-h-[48px] w-full px-3 py-2 text-center text-sm leading-snug font-bold text-slate-700 bg-slate-100 rounded-2xl"
             >
               <span>Сообщество ВКонтакте (5&nbsp;900+ подписчиков)</span>
               <ExternalLink className="w-4 h-4 shrink-0" />

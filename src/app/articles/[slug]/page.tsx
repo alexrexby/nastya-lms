@@ -5,6 +5,12 @@ import { DEMO_ARTICLES } from "@/lib/demo-data";
 import { ChemText } from "@/components/chemistry/ChemFormula";
 import { QuizPlayer } from "@/components/quiz/QuizPlayer";
 
+export function generateStaticParams() {
+  return DEMO_ARTICLES.map((article) => ({
+    slug: article.slug,
+  }));
+}
+
 export default async function ArticleDetailPage({
   params,
 }: {

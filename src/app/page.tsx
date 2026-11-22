@@ -16,8 +16,10 @@ export default function HomePage() {
               <div className="inline-flex flex-wrap items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-brandOchre-100/90 text-brandOchre-900 text-[11px] sm:text-xs font-bold uppercase tracking-wider border border-brandOchre-300 shadow-sm">
                 <Sparkles className="w-3.5 h-3.5 text-brandOchre-700 shrink-0" />
                 <span className="whitespace-nowrap">Химия: понять и&nbsp;сдать!</span>
-                <span className="text-brandOchre-400">•</span>
-                <span className="whitespace-nowrap">ОГЭ и&nbsp;ЕГЭ 2025/2026</span>
+                <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
+                  <span className="text-brandOchre-400">•</span>
+                  <span>ОГЭ и&nbsp;ЕГЭ 2025/2026</span>
+                </span>
               </div>
 
               {/* Заголовок: выверенная ритмика без висячих слов */}
