@@ -1,0 +1,146 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String            @id @default(cuid())
+  email        String            @unique
+  name         String
+  role         String            @default("STUDENT") // STUDENT, TEACHER, ADMIN
+  avatar       String?
+  createdAt    DateTime          @default(now())
+  enrollments  GroupEnrollment[]
+  submissions  Submission[]
+  quizAttempts QuizAttempt[]
+}
+
+model Article {
+  id          String     @id @default(cuid())
+  slug        String     @unique
+  title       String
+  category    String     // "Общая химия", "Неорганика", "Органика", "Задачи"
+  excerpt     String
+  content     String
+  readTime    String     @default("7 мин")
+  published   Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  questions   Question[]
+}
+
+model Course {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  description String
+  badge       String   @default("ЕГЭ 2025/2026")
+  isPublic    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  modules     Module[]
+  groups      Group[]
+}
+
+model Module {
+  id       String   @id @default(cuid())
+  courseId String
+  title    String
+  order    Int      @default(0)
+  course   Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessons  Lesson[]
+}
+
+model Lesson {
+  id               String        @id @default(cuid())
+  moduleId         String
+  title            String
+  order            Int           @default(0)
+  theoryText       String        // Конспект, формулы, правила
+  homeworkPrompt   String        // Задание 2-й части (цепочка, задача)
+  module           Module        @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  groupLessons     GroupLesson[]
+  questions        Question[]
+  quizAttempts     QuizAttempt[]
+}
+
+model Group {
+  id           String            @id @default(cuid())
+  courseId     String
+  name         String            // например "Группа Пн/Чт 16:00", "Группа Вт/Пт 18:00"
+  scheduleText String            // "Пн, Чт в 16:00 МСК"
+  createdAt    DateTime          @default(now())
+  course       Course            @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  enrollments  GroupEnrollment[]
+  groupLessons GroupLesson[]
+}
+
+model GroupEnrollment {
+  id       String   @id @default(cuid())
+  groupId  String
+  userId   String
+  joinedAt DateTime @default(now())
+  group    Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, userId])
+}
+
+// Ключевая модель: экземпляр урока в конкретной группе с видеозаписью именно этой группы!
+model GroupLesson {
+  id          String       @id @default(cuid())
+  groupId     String
+  lessonId    String
+  videoUrl    String?      // Ссылка на видео прошедшего урока (Kinescope, VK, YouTube, RuTube)
+  videoTitle  String?      // Например: "Запись вебинара 14 ноября (Группа 1)"
+  meetingDate DateTime?
+  notes       String?      // Заметки репетитора к этому конкретному уроку
+  group       Group        @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  lesson      Lesson       @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  submissions Submission[]
+
+  @@unique([groupId, lessonId])
+}
+
+model Question {
+  id          String   @id @default(cuid())
+  lessonId    String?
+  articleId   String?
+  topic       String?  // Например: "Строение атома", "Гидролиз", "Органика"
+  type        String   // "SINGLE_CHOICE", "MULTIPLE_CHOICE", "MATCHING", "NUMBER_INPUT"
+  prompt      String   // Текст вопроса (поддерживает химические формулы)
+  explanation String   // Мгновенный разбор с реакциями и признаками
+  dataJson    String   // Варианты ответов, правильные ответы, соответствия
+  order       Int      @default(0)
+  lesson      Lesson?  @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  article     Article? @relation(fields: [articleId], references: [id], onDelete: Cascade)
+}
+
+model QuizAttempt {
+  id          String   @id @default(cuid())
+  userId      String
+  lessonId    String
+  score       Int
+  maxScore    Int
+  answersJson String
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson      Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+}
+
+model Submission {
+  id            String      @id @default(cuid())
+  userId        String
+  groupLessonId String
+  homeworkText  String?
+  photoUrlsJson String      // Список URL фотографий тетради
+  grade         Int?        // Оценка/первичный балл репетитора
+  teacherComment String?    // Рецензия репетитора
+  status        String      @default("PENDING") // PENDING, GRADED, REJECTED
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  groupLesson   GroupLesson @relation(fields: [groupLessonId], references: [id], onDelete: Cascade)
+}
